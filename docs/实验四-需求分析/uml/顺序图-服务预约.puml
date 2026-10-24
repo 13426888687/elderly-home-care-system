@@ -1,0 +1,39 @@
+@startuml 顺序图-服务预约
+' 居家养老系统 - 核心用例"上门服务预约"顺序图(家属代下单场景)
+skinparam sequenceMessageAlign center
+
+actor "家属" as Family
+participant "居家养老APP" as App
+participant "系统服务器" as Server
+participant "支付平台" as Pay
+actor "护工" as Worker
+
+Family -> App : 1. 选择服务类型\n(助餐/助洁/陪诊等)与时间
+activate App
+App -> Server : 2. 查询可服务护工列表
+activate Server
+Server --> App : 3. 返回护工列表\n(含评分/距离/空闲时段)
+App -> Server : 4. 提交预约订单\n(老人+服务项+时间+护工)
+Server -> Server : 5. 校验订单合法性\n6. 生成待支付订单
+Server --> App : 7. 返回订单号与支付信息
+deactivate Server
+App -> Pay : 8. 发起支付
+activate Pay
+Pay --> Pay : 9. 处理支付请求
+Pay --> Server : 10. 支付结果回调(成功)
+deactivate Pay
+activate Server
+Server -> Server : 11. 订单状态置为"待接单"
+Server -> Worker : 12. 推送新订单通知
+Server --> App : 13. 返回"支付成功"
+deactivate Server
+App --> Family : 14. 展示订单详情页
+deactivate App
+Worker -> Server : 15. 确认接单
+activate Server
+Server -> Server : 16. 订单状态置为"服务中"
+Server --> Worker : 17. 接单成功,返回服务地址与联系方式
+Server -> Family : 18. 推送"护工已接单"通知
+deactivate Server
+
+@enduml

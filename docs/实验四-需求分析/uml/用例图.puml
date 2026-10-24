@@ -1,0 +1,63 @@
+@startuml 用例图
+' 居家养老系统 - 需求分析用例图
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+left to right direction
+
+actor "老人" as Elder
+actor "家属" as Family
+actor "护工" as Worker
+actor "平台管理员" as Admin
+actor "支付平台" as Pay <<系统>>
+actor "可穿戴设备" as Device <<系统>>
+
+rectangle "居家养老系统" {
+  usecase "注册与登录" as UC01
+  usecase "紧急呼救(SOS)" as UC02
+  usecase "告警推送" as UC10
+  usecase "健康数据监测" as UC03
+  usecase "上门服务预约" as UC04
+  usecase "订单支付" as UC05
+  usecase "接单与完成服务" as UC06
+  usecase "服务评价" as UC07
+  usecase "远程看护老人" as UC08
+  usecase "绑定老人" as UC09
+  usecase "用户管理" as UC11
+  usecase "护工资质审核" as UC12
+  usecase "服务类型管理" as UC13
+  usecase "订单监管与统计" as UC14
+}
+
+Elder --> UC01
+Elder --> UC02
+Elder --> UC03
+Elder --> UC04
+Elder --> UC07
+
+Family --> UC01
+Family --> UC04
+Family --> UC08
+Family --> UC09
+Family --> UC10
+
+Worker --> UC01
+Worker --> UC06
+
+Admin --> UC01
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+Admin --> UC14
+
+UC02 ..> UC10 : <<include>>
+UC08 ..> UC10 : <<extend>>
+UC04 ..> UC05 : <<include>>
+UC03 ..> Device : 数据上报
+UC05 ..> Pay : 支付/退款
+
+note right of UC04
+  家属代预约前提:
+  已完成"绑定老人"(UC09)
+end note
+
+@enduml

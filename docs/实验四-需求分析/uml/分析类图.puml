@@ -1,0 +1,128 @@
+@startuml 分析类图
+' 居家养老系统 - 需求分析类图(业务实体及关系)
+skinparam classAttributeIconSize 0
+hide circle
+
+class User {
+  -userId : Long
+  -username : String
+  -password : String(加密)
+  -phone : String
+  -role : 角色枚举
+  -registerTime : DateTime
+  +register()
+  +login()
+  +updateInfo()
+}
+
+class Elder {
+  -name : String
+  -gender : 性别
+  -birthDate : Date
+  -address : String
+  -emergencyContact : String
+  +triggerSos()
+  +viewHealthData()
+}
+
+class FamilyMember {
+  -name : String
+  -relationship : String
+  +bindElder()
+  +viewElderStatus()
+  +bookService()
+}
+
+class CareWorker {
+  -name : String
+  -serviceTypes : List<服务类型>
+  -qualificationStatus : 资质状态
+  -rating : Double
+  -workStatus : 工作状态
+  +acceptOrder()
+  +completeOrder()
+}
+
+class Admin {
+  -name : String
+  -dept : String
+  +auditWorker()
+  +manageUser()
+  +viewStatistics()
+}
+
+class ServiceType {
+  -typeId : Long
+  -typeName : String(助餐/助洁/陪诊...)
+  -price : BigDecimal
+  -description : String
+}
+
+class ServiceOrder {
+  -orderId : Long
+  -orderStatus : 订单状态
+  -serviceTime : DateTime
+  -amount : BigDecimal
+  -payTime : DateTime
+  -createTime : DateTime
+  +createOrder()
+  +payOrder()
+  +cancelOrder()
+  +confirmComplete()
+}
+
+class HealthData {
+  -dataId : Long
+  -heartRate : Integer
+  -bloodPressure : String
+  -bloodOxygen : Integer
+  -measureTime : DateTime
+  -deviceId : String
+  +reportData()
+  +checkAbnormal()
+}
+
+class SosAlert {
+  -alertId : Long
+  -alertTime : DateTime
+  -longitude : Double
+  -latitude : Double
+  -handleStatus : 处理状态
+  +createAlert()
+  +notifyContacts()
+  +updateStatus()
+}
+
+class Review {
+  -reviewId : Long
+  -score : Integer(1~5星)
+  -content : String
+  -createTime : DateTime
+  +submitReview()
+}
+
+class Notification {
+  -notifyId : Long
+  -receiverId : Long
+  -type : 通知类型
+  -content : String
+  -sendTime : DateTime
+  -readFlag : Boolean
+  +send()
+}
+
+User <|-- Elder
+User <|-- FamilyMember
+User <|-- CareWorker
+User <|-- Admin
+
+FamilyMember "n" -- "n" Elder : 绑定
+Elder "1" -- "n" HealthData : 拥有
+Elder "1" -- "n" SosAlert : 触发
+Elder "1" -- "n" ServiceOrder : 接受服务
+ServiceOrder "n" -- "1" ServiceType : 属于
+ServiceOrder "n" -- "1" CareWorker : 由...服务
+ServiceOrder "1" -- "0..1" Review : 获得评价
+Notification "n" -- "1" User : 发送给
+
+@enduml
